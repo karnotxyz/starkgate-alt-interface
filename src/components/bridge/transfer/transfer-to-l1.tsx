@@ -3,7 +3,6 @@ import { useValidateTransaction } from "@/components/bridge/hooks/use-validate-t
 import { useBridgeInputStore } from "@/components/bridge/state/store";
 import { TransferModal } from "@/components/bridge/transfer/modal";
 import { TransferToProps } from "@/components/bridge/transfer/transfer-funds";
-import { MaintenanceDialog } from "@/components/shared/ui/maintenance-dialog";
 import { YetAnotherButton } from "@/components/shared/ui/yet-another-button";
 import { parseFromDecimals } from "@/lib/number-parser";
 import { useAccount as useStarknetAccount } from "@starknet-react/core";
@@ -39,17 +38,12 @@ const TransferToEthereum = ({
 
 	// validations
 	const { buttonLabel, isDisabled } = useValidateTransaction({
-		upperBound: null,
 		isUnderMaintenance,
 		toChain: "Starknet",
 	});
 
 	return (
-		<MaintenanceDialog
-			isUnderMaintenance={isUnderMaintenance}
-			workingOn={"bridge"}
-			switchTo={"Ethereum"}
-		>
+		<>
 			<TransferModal
 				isFeeValid={true}
 				loading={isLoading || isTransactionPending}
@@ -70,7 +64,7 @@ const TransferToEthereum = ({
 					</YetAnotherButton>
 				}
 			/>
-		</MaintenanceDialog>
+		</>
 	);
 };
 
