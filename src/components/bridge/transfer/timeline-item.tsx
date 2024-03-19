@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { ClassNameWithChildren } from "@/types/class-name-with-children";
 import { Minus } from "lucide-react";
 import React, { ReactNode } from "react";
+import { useBridgeTypeToggle } from "@/components/bridge/hooks/use-bridge-type-toggle";
 
 export type TimelineItemProps = {
 	step: BridgeStep;
@@ -18,6 +19,8 @@ export const TimelineItem = ({ message, step, Icon }: TimelineItemProps) => {
 		originExplorerUrl,
 		destinationExplorerUrl,
 	} = useBridgeStep();
+	const [isDeposit] = useBridgeTypeToggle();
+
 	return (
 		<div className={"flex flex-col"}>
 			<Icon className={"inline-flex items-center gap-3"}>
@@ -50,6 +53,21 @@ export const TimelineItem = ({ message, step, Icon }: TimelineItemProps) => {
 							step === "confirming" &&
 								state !== "confirming" &&
 								"text-success",
+						)}
+					/>
+				)
+			}
+			{
+				// add vertical separator for processing step
+				isDeposit && step === "processingOrigin" && (
+					<VerticalSeparator
+						className={cn(
+							step === "processingOrigin" &&
+								state !== "processingOrigin" &&
+								state !== "confirming"
+								? "text-success"
+								: state === "confirming" &&
+										"text-muted-foreground",
 						)}
 					/>
 				)

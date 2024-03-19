@@ -54,6 +54,7 @@ export const ProgressTimeline = () => {
 	const { step: state, isProcessingDestination } = useBridgeStep();
 	const [isDeposit] = useBridgeTypeToggle();
 	const origin = isDeposit ? "Ethereum" : "Starknet";
+	const destination = isDeposit ? "Starknet" : "Ethereum";
 	const timeline = useMemo<TimelineItemProps[]>(
 		() => [
 			{
@@ -86,8 +87,26 @@ export const ProgressTimeline = () => {
 					</div>
 				),
 			},
+			{
+				step: "processingDestination",
+				message: `Processing in ${destination}.`,
+				Icon: ({ children, className }: ClassNameWithChildren) => (
+					<div className={className}>
+						<LoadingSpinner
+							className={className}
+							isSuccess={state !== "processingDestination"}
+							isIdle={
+								state === "confirming" ||
+								state === "processingOrigin"
+							}
+						>
+							{children}
+						</LoadingSpinner>
+					</div>
+				),
+			},
 		],
-		[state, origin],
+		[state, origin, destination],
 	);
 
 	return (
@@ -98,13 +117,15 @@ export const ProgressTimeline = () => {
 						"-mt-5 pb-4 text-left text-base text-muted-foreground"
 					}
 				>
-					In ~12 hours, your funds will be available to execute a
+					In ~5 hours, your funds will be available to execute a
 					withdraw in Ethereum.
 				</p>
 			)}
-			{timeline.map((props) => (
-				<TimelineItem key={props.message} {...props} />
-			))}
+			{timeline.map((props) => {
+				if (!isDeposit && props.step === "processingDestination")
+					return null;
+				return <TimelineItem key={props.message} {...props} />;
+			})}
 		</div>
 	);
 };
