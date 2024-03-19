@@ -3,7 +3,8 @@ export type SiteConfig = typeof siteConfig;
 export const siteConfig = {
 	name: "Not Another Starknet Bridge",
 	shortName: "NASB",
-	description: "Bridge ETH from Starknet to Ethereum and vice versa using native technologies.",
+	description:
+		"Bridge ETH from Starknet to Ethereum and vice versa using native technologies.",
 	emoji: "😎",
 	backgroundColor: "#000",
 	themeColor: "#5482EF",

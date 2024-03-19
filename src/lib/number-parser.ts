@@ -1,5 +1,5 @@
 // ported from: https://github.com/starknet-io/starkgate-frontend/blob/master/workspace/packages/web3-utils/src/parser.ts
-import { cairo, num, uint256 } from 'starknet';
+import { cairo, num, uint256 } from "starknet";
 import { fromWeiByDecimals, toWeiByDecimals } from "@normalizex/ethjs-unit";
 
 const DEFAULT_DECIMALS = 18;

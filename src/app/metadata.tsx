@@ -35,7 +35,7 @@ export const rootMetadata: Metadata = {
 		languages: {
 			"en-US": "/en-US",
 		},
-	}
+	},
 };
 
 export const viewport: Viewport = {

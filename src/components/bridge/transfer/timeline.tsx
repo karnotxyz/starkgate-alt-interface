@@ -93,7 +93,11 @@ export const ProgressTimeline = () => {
 	return (
 		<div className={"flex flex-col py-3"}>
 			{!isDeposit && isProcessingDestination && (
-				<p className={"-mt-5 pb-4 text-left text-base text-muted-foreground"}>
+				<p
+					className={
+						"-mt-5 pb-4 text-left text-base text-muted-foreground"
+					}
+				>
 					In ~12 hours, your funds will be available to execute a
 					withdraw in Ethereum.
 				</p>

@@ -1,7 +1,7 @@
-import { cn } from '@/lib/utils';
-import { comicNeue_700 } from '@/app/fonts';
-import { PropsWithChildren } from 'react';
-import Balancer from 'react-wrap-balancer';
+import { cn } from "@/lib/utils";
+import { comicNeue_700 } from "@/app/fonts";
+import { PropsWithChildren } from "react";
+import Balancer from "react-wrap-balancer";
 
 interface TitleProps extends PropsWithChildren {
 	className?: string;
