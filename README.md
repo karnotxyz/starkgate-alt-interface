@@ -1,7 +1,21 @@
-# Not Another Starknet Bridge
+# StarkGate Bridge Alternative Interface
 
-This is a webapp that provides a user interface for interacting with the Starknet blockchain. It is a bootstrapped from 
-[Yet Another Bridge](https://yetanotherbridge.com).
+> [!CAUTION]
+> Use with caution and at your own risk as this repository is still experimental and NOT production ready.
+
+This an experimental alternative frontend interface implementation of
+the [StarkGate Bridge](https://docs.starknet.io/documentation/tools/starkgate-bridge/). It is not production ready,
+therefore use it at your own risk.
+
+For a complete implementation of the StarkGate frontend, please refer to the official
+repository [here](https://github.com/starknet-io/starkgate-frontend).
+
+Special thanks to the Starkware team for their hard work.
+
+## Objective
+
+The objective of this project is to provide an alternative frontend interface for the Starknet StarkGate bridge to be
+used in testnets & app chain environments like [Madara](https://github.com/keep-starknet-strange/madara) for example.
 
 ## Requirements
 

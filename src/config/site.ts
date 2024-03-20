@@ -1,10 +1,10 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-	name: "Not Another Starknet Bridge",
-	shortName: "NASB",
+	name: "StarkGate Alternative Interface",
+	shortName: "SAI",
 	description:
-		"Bridge ETH from Starknet to Ethereum and vice versa using native technologies.",
+		"StarGate alternative frontend implementation for testnets & appchains like Madara for example.",
 	emoji: "😎",
 	backgroundColor: "#000",
 	themeColor: "#5482EF",
