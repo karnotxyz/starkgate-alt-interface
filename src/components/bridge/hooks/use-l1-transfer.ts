@@ -12,144 +12,172 @@ import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 
 export const useL1Transfer = (
-	l1Address: `0x${string}`,
-	l2Recipient: string,
-	amountInWei: number,
+  l1Address: `0x${string}`,
+  l2Recipient: string,
+  amountInWei: number
 ) => {
-	const { getL1ExplorerUrl, getDepositAddress, getStarkgateAddressData } =
-		useNetworkUtils();
-	const {
-		setIdle,
-		setConfirming,
-		setProcessingOrigin,
-		setProcessingDestination,
-	} = useBridgeStep();
-	const { provider } = useProvider();
-	const rpcProvider = provider as RpcProvider;
+  const { getL1ExplorerUrl, getDepositAddress, getStarkgateAddressData } =
+    useNetworkUtils();
+  const {
+    setIdle,
+    setConfirming,
+    setProcessingOrigin,
+    setProcessingDestination,
+  } = useBridgeStep();
+  const { provider } = useProvider();
+  const rpcProvider = provider as RpcProvider;
 
-	/**
-	 * fee estimate
-	 */
-	const amountAsUint256 = cairo.uint256(amountInWei);
-	const { low, high } = amountAsUint256;
-	const payload = [l2Recipient, String(low), String(high)];
-	const { l1EthBridgeAddress, l2EthBridgeAddress } =
-		getStarkgateAddressData();
+  //   const { sendTransaction } = useSendTransaction();
+  //   sendTransaction({
+  //     to: "0xa513e6e4b8f2a923d98304ec87f64353c4d5c853",
+  //     value: parseEther("20"),
+  //   });
+  //   console.log("sent the balance");
 
-	const queryKey = useMemo(() => {
-		return ["estimateMessageFee", amountInWei, l2Recipient];
-	}, [amountInWei, l2Recipient]);
+  /**
+   * fee estimate
+   */
+  const amountAsUint256 = cairo.uint256(amountInWei);
+  const { low, high } = amountAsUint256;
+  const payload = [l2Recipient, String(low), String(high)];
+  const { l1EthBridgeAddress, l2EthBridgeAddress } = getStarkgateAddressData();
 
-	const { data: feeEstimateData } = useQuery({
-		queryKey: queryKey,
-		queryFn: async () => {
-			try {
-				return await rpcProvider.estimateMessageFee({
-					from_address: l1EthBridgeAddress,
-					to_address: l2EthBridgeAddress,
-					entry_point_selector: "handle_deposit",
-					payload: payload,
-				});
-			} catch (e) {
-				console.error("estimateMessageFee error: ", e);
-				return null;
-			}
-		},
-		enabled: Boolean(
-			l2Recipient &&
-				amountInWei &&
-				l1EthBridgeAddress &&
-				l2EthBridgeAddress,
-		),
-	});
-	const { overall_fee: overallFee } = feeEstimateData ?? {};
+  const queryKey = useMemo(() => {
+    return ["estimateMessageFee", amountInWei, l2Recipient];
+  }, [amountInWei, l2Recipient]);
 
-	// do contract write (https://wagmi.sh/react/guides/write-to-contract)
-	const {
-		data: writeContractData,
-		writeContract: write,
-		isPending: isTransactionPending,
-	} = useWriteContract({
-		mutation: {
-			onMutate: () => {
-				setConfirming();
-			},
-			onSuccess: (data) => {
-				setProcessingOrigin(data, getL1ExplorerUrl(data));
-			},
-			onError: (error) => {
-				switch (true) {
-					case error.message.includes("User rejected the request"):
-						setIdle();
-						toast.warning(
-							"You just rejected the transaction, you might want to try again.",
-						);
-						break;
-					case error.message.includes(
-						"Attempting to use a disconnected port object",
-					):
-						setIdle();
-						toast.warning(
-							"Your wallet seems to be locked, unlock it and try again.",
-						);
-						break;
-					default:
-						toast.error(
-							"Oops! Something went wrong with the transfer, try again.",
-						);
-						break;
-				}
-			},
-		},
-	});
+  const { data: feeEstimateData } = useQuery({
+    queryKey: queryKey,
+    queryFn: async () => {
+      try {
+        return await rpcProvider.estimateMessageFee({
+          from_address: l1EthBridgeAddress,
+          to_address: l2EthBridgeAddress,
+          entry_point_selector: "handle_deposit",
+          payload: payload,
+        });
+      } catch (e) {
+        console.error("estimateMessageFee error: ", e);
+        return null;
+      }
+    },
+    enabled: Boolean(
+      l2Recipient && amountInWei && l1EthBridgeAddress && l2EthBridgeAddress
+    ),
+  });
+  const { overall_fee: overallFee } = feeEstimateData ?? {};
 
-	// wait for transaction
-	const { isLoading, isSuccess } = useWaitForTransactionReceipt({
-		hash: writeContractData,
-	});
+  console.log(
+    ">>>>>>> : overallFee",
+    overallFee,
+    l1EthBridgeAddress,
+    l2EthBridgeAddress,
+    payload
+  );
 
-	// escape hatch to prevent multiple submissions
-	const isSubmitted = useRef<boolean>(false);
+  // do contract write (https://wagmi.sh/react/guides/write-to-contract)
+  const {
+    data: writeContractData,
+    writeContract: write,
+    isPending: isTransactionPending,
+  } = useWriteContract({
+    mutation: {
+      onMutate: () => {
+        setConfirming();
+      },
+      onSuccess: (data) => {
+        console.log(">>>>> data :", data);
+        setProcessingOrigin(data, getL1ExplorerUrl(data));
+      },
+      onError: (error) => {
+        console.log(error);
+        switch (true) {
+          case error.message.includes("User rejected the request"):
+            setIdle();
+            toast.warning(
+              "You just rejected the transaction, you might want to try again."
+            );
+            break;
+          case error.message.includes(
+            "Attempting to use a disconnected port object"
+          ):
+            setIdle();
+            toast.warning(
+              "Your wallet seems to be locked, unlock it and try again."
+            );
+            break;
+          default:
+            toast.error(
+              "Oops! Something went wrong with the transfer, try again."
+            );
+            break;
+        }
+      },
+    },
+  });
 
-	useEffect(() => {
-		if (!isSuccess || isSubmitted.current) return;
-		setProcessingDestination();
-		isSubmitted.current = true;
-	}, [isSuccess, setProcessingDestination]);
+  // wait for transaction
+  const { isLoading, isSuccess } = useWaitForTransactionReceipt({
+    hash: writeContractData,
+  });
 
-	// track when starkgate is sending the funds in the L2
-	useTrackL2Transaction({
-		amount: amountAsUint256,
-		l2Recipient: l2Recipient,
-		contractAddress: l2EthBridgeAddress,
-	});
+  // escape hatch to prevent multiple submissions
+  const isSubmitted = useRef<boolean>(false);
 
-	const amountWithFee = BigInt(amountInWei) + BigInt(overallFee ?? 0);
+  useEffect(() => {
+    if (!isSuccess || isSubmitted.current) return;
+    setProcessingDestination();
+    isSubmitted.current = true;
+  }, [isSuccess, setProcessingDestination]);
 
-	// function to execute the contract write
-	const writeContract = useCallback(() => {
-		write({
-			address: getDepositAddress(),
-			abi: STARKGATE_DEPOSIT_ABI,
-			functionName: "deposit",
-			args: [amountInWei, l2Recipient],
-			value: amountWithFee,
-			account: l1Address,
-		});
-	}, [
-		write,
-		getDepositAddress,
-		l1Address,
-		amountInWei,
-		l2Recipient,
-		amountWithFee,
-	]);
+  // track when starkgate is sending the funds in the L2
+  useTrackL2Transaction({
+    amount: amountAsUint256,
+    l2Recipient: l2Recipient,
+    contractAddress: l2EthBridgeAddress,
+  });
 
-	return {
-		isLoading,
-		isTransactionPending,
-		writeContract,
-		// convert overallFee from hex to decimal and return it as a string
-		overallFee: parseInt(overallFee ?? "0", 16).toString(),
-	};
+  //   const amountWithFee = BigInt(amountInWei) + BigInt(overallFee ?? 0);
+  const amountWithFee = BigInt(amountInWei) + BigInt(10**6);
+
+  console.log({
+    address: getDepositAddress(),
+    abi: STARKGATE_DEPOSIT_ABI,
+    functionName: "deposit",
+    args: [amountInWei, l2Recipient],
+    value: amountWithFee,
+    account: l1Address,
+  });
+
+  //   const bal = await provider.getBala
+
+  // const nonce = await provider.getNonceForAddress()
+
+  // function to execute the contract write
+  const writeContract = useCallback(() => {
+    write({
+      address: getDepositAddress(),
+      abi: STARKGATE_DEPOSIT_ABI,
+      functionName: "deposit",
+      args: [amountInWei, l2Recipient],
+      value: amountWithFee,
+      account: l1Address,
+      // nonce: provider.getNonceForAddress()
+    });
+  }, [
+    write,
+    getDepositAddress,
+    l1Address,
+    amountInWei,
+    l2Recipient,
+    amountWithFee,
+  ]);
+
+  return {
+    isLoading,
+    isTransactionPending,
+    writeContract,
+    // convert overallFee from hex to decimal and return it as a string
+    overallFee: parseInt(overallFee ?? "0", 16).toString(),
+  };
 };

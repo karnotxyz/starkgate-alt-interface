@@ -38,7 +38,16 @@ const storage = createJSONStorage<NetworkType>(() =>
 
 export const networkAtom = atomWithStorage<NetworkType>(
 	"network",
-	"sepolia",
+	"anvil",
+	storage,
+	{
+		getOnInit: true,
+	},
+);
+
+export const networkAtomL2 = atomWithStorage<NetworkType>(
+	"network",
+	"madara",
 	storage,
 	{
 		getOnInit: true,

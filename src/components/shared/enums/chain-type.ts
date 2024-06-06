@@ -6,11 +6,13 @@ type IChainType = {
 export enum ChainTypeL1 {
 	MAIN = "mainnet",
 	SEPOLIA = "sepolia",
+	ANVIL = "anvil"
 }
 
 export enum ChainTypeL2 {
 	MAIN = "mainnet",
 	SEPOLIA = "sepolia",
+	MADARA = "madara"
 }
 
 type ChainsType = {
